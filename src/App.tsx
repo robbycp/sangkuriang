@@ -3,8 +3,8 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from '@material-ui/core/styles';
 
-import { store } from 'redux/configureStore';
 import Routes from 'routes/index'
+import { store } from 'redux/configureStore';
 import theme from './theme';
 import './App.css';
 

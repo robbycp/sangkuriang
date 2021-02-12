@@ -1,7 +1,6 @@
 import React, { lazy } from 'react'
-import { BrowserRouter, Switch, Route } from 'react-router-dom'
+import { Redirect, Switch, Route } from 'react-router-dom'
 
-import Layout from 'components/Layout'
 import withSuspense from 'hoc/withSuspense'
 import Home from 'routes/home'
 
@@ -27,7 +26,13 @@ const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({ isAuthenticated }) =>
       </>
     )
   }
-  return null
+  return (
+    <Redirect
+      to={{
+        pathname: "/",
+      }}
+    />
+  )
 }
 
 interface RoutesProps {
@@ -40,14 +45,10 @@ const Routes: React.FC<RoutesProps> = ({ isAuthenticated, isLoading }) => {
     return <div>Loading</div>
   }
   return (
-    <BrowserRouter>
-      <Switch>
-        <Layout>
-          <Route exact path="/" component={Home} />
-          <ProtectedRoutes isAuthenticated={isAuthenticated} />
-        </Layout>
-      </Switch>
-    </BrowserRouter>
+    <Switch>
+      <Route exact path="/" component={Home} />
+      <ProtectedRoutes isAuthenticated={isAuthenticated} />
+    </Switch>
   )
 }
 

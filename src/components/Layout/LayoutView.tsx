@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       display: 'flex',
     },
-    accountName: {
+    accountEmail: {
       marginRight: theme.spacing(2),
     },
     appBar: {
@@ -104,8 +104,9 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  accountName: string;
+  accountEmail: string;
   children: any;
+  dispatchSignOut: () => any;
   isAuthenticated: boolean;
 }
 
@@ -123,8 +124,9 @@ const menuList = [
 ]
 
 export default function LayoutView(props: Props) {
-  const { accountName, children, isAuthenticated } = props
+  const { accountEmail, children, dispatchSignOut, isAuthenticated } = props
   const history = useHistory()
+  console.log('history', history)
   const classes = useStyles();
   const theme = useTheme();
   const [openDrawer, setOpenDrawer] = React.useState(false);
@@ -168,8 +170,8 @@ export default function LayoutView(props: Props) {
           </Typography>
           {isAuthenticated && (
             <>
-              <Typography variant="h6" noWrap className={classes.accountName}>
-                {accountName}
+              <Typography variant="h6" noWrap className={classes.accountEmail}>
+                {accountEmail}
               </Typography>
               <AccountCircleIcon />
             </>
@@ -214,7 +216,7 @@ export default function LayoutView(props: Props) {
               <ListItemIcon><SettingsIcon /></ListItemIcon>
               <ListItemText primary="Settings" />
             </ListItem>
-            <ListItem button>
+            <ListItem button onClick={() => dispatchSignOut()}>
               <ListItemIcon><ExitToAppIcon /></ListItemIcon>
               <ListItemText primary="Sign Out" />
             </ListItem>

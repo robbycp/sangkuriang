@@ -1,1 +1,1 @@
-export { default } from './PageHomeView'
+export { default } from './PageHomeRedux'

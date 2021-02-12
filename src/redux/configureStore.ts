@@ -1,15 +1,27 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import { configureStore, combineReducers, ThunkAction, Action } from '@reduxjs/toolkit';
+import { connectRouter, routerMiddleware } from 'connected-react-router'
+import { createBrowserHistory, History } from 'history'
 import logger from 'redux-logger'
 
-import counterReducer from './reducer/counterSlice';
+import authReducer from 'redux/reducer/authSlice'
+import counterReducer from 'redux/reducer/counterSlice';
 
-const reducer = {
-  counter: counterReducer,
+function createRootReducer (history: History) {
+  return combineReducers({
+    router: connectRouter(history),
+    auth: authReducer,
+    counter: counterReducer,
+  })
 }
 
+export const history = createBrowserHistory()
+const rootReducer = createRootReducer(history)
+
 export const store = configureStore({
-  reducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware()
+    .concat(routerMiddleware(history))
+    .concat(logger),
   devTools: process.env.NODE_ENV !== 'production',
 });
 

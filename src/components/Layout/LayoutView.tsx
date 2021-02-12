@@ -126,7 +126,6 @@ const menuList = [
 export default function LayoutView(props: Props) {
   const { accountEmail, children, dispatchSignOut, isAuthenticated } = props
   const history = useHistory()
-  console.log('history', history)
   const classes = useStyles();
   const theme = useTheme();
   const [openDrawer, setOpenDrawer] = React.useState(false);

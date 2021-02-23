@@ -4,11 +4,12 @@ import PageScanView from './PageScanView'
 
 interface Props {
   dispatchScanNmap: (payload: string) => void
+  dispatchScanZapSpider: (payload: string) => void
   stateNmap: object
 }
 
 function PageScanContainer(props: Props) {
-  const { dispatchScanNmap } = props
+  const { dispatchScanNmap, dispatchScanZapSpider } = props
   const [urlScanned, seturlScanned] = React.useState('')
   const handleChangeUrl = (event: React.ChangeEvent<HTMLInputElement>) => {
     seturlScanned(event.target.value);
@@ -49,6 +50,11 @@ function PageScanContainer(props: Props) {
   const handleSubmit = () => {
     if (scanTools.nmap) {
       dispatchScanNmap(urlScanned)
+    }
+    if (scanTools.owaspZap) {
+      if (owaspZapMode.spider) {
+        dispatchScanZapSpider(urlScanned)
+      }
     }
   }
 

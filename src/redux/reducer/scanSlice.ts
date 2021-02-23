@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import api from 'utils/api';
 import { AppThunk, RootState } from 'redux/configureStore';
-import { SCAN_NMAP_GET } from 'constants/endpoints'
+import { SCAN_NMAP_POST, SCAN_WASP_SPIDER_POST } from 'constants/endpoints'
 
 interface ScanState {
   scanNmap: {
@@ -10,7 +10,7 @@ interface ScanState {
     error: any
     isLoading: boolean
   }
-  scanSpider: {
+  scanZapSpider: {
     data: any
     error: any
     isLoading: boolean
@@ -23,7 +23,7 @@ const initialState: ScanState = {
     error: {},
     isLoading: false,
   },
-  scanSpider: {
+  scanZapSpider: {
     data: {},
     error: {},
     isLoading: false,
@@ -45,6 +45,17 @@ export const scanSlice = createSlice({
       state.scanNmap.isLoading = false
       state.scanNmap.data = { ...action.payload }
     },
+    scanZapSpiderStart: state => {
+      state.scanZapSpider.isLoading = true
+    },
+    scanZapSpiderFailed: (state, action: PayloadAction<any>) => {
+      state.scanZapSpider.isLoading = false
+      state.scanZapSpider.error = { ...action.payload }
+    },
+    scanZapSpiderSuccess: (state, action: PayloadAction<any>) => {
+      state.scanZapSpider.isLoading = false
+      state.scanZapSpider.data = { ...action.payload }
+    }
   },
 });
 
@@ -52,23 +63,40 @@ export const {
   scanNmapStart,
   scanNmapFailed,
   scanNmapSuccess,
+  scanZapSpiderStart,
+  scanZapSpiderFailed,
+  scanZapSpiderSuccess,
 } = scanSlice.actions;
 
 export const scanNmap = (urlTarget: string): AppThunk => async (dispatch) => {
   dispatch(scanNmapStart())
   try {
     const { data } = await api({
-      endpoint: SCAN_NMAP_GET,
+      endpoint: SCAN_NMAP_POST,
       params: {
         target: urlTarget,
       },
     })
-    console.log('scanNmap data', data)
     dispatch(scanNmapSuccess(data))
   } catch (error) {
     dispatch(scanNmapFailed(error))
   }
 };
+
+export const scanZapSpider = (urlTarget: string): AppThunk => async (dispatch) => {
+  dispatch(scanZapSpiderStart())
+  try {
+    const { data } = await api({
+      endpoint: SCAN_WASP_SPIDER_POST,
+      params: {
+        target: urlTarget,
+      }
+    })
+    dispatch(scanZapSpiderSuccess(data))
+  } catch (error) {
+    dispatch(scanZapSpiderFailed(error))
+  }
+}
 
 export const selectNmap = (state: RootState) => ({
   scanNmap: state.scan.scanNmap,

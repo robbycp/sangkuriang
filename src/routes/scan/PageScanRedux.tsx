@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { useDispatch, useSelector } from 'react-redux';
-import { scanNmap, scanZapSpider, selectNmap } from 'redux/reducer/scanSlice';
+import { scanNmap, scanSubdomain, scanZapSpider, selectNmap } from 'redux/reducer/scanSlice';
 
 import PageScanContainer from './PageScanContainer'
 
@@ -11,11 +11,15 @@ function PageScanRedux() {
   const dispatchScanNmap = (urlString: string) => {
     dispatch(scanNmap(urlString))
   }
+  const dispatchScanSubdomain = (urlString: string) => {
+    dispatch(scanSubdomain(urlString))
+  }
   const dispatchScanZapSpider = (urlString: string) => {
     dispatch(scanZapSpider(urlString))
   }
   const props = {
     dispatchScanNmap,
+    dispatchScanSubdomain,
     dispatchScanZapSpider,
     stateNmap,
   }

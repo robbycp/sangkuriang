@@ -2,13 +2,18 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import api from 'utils/api';
 import { AppThunk, RootState } from 'redux/configureStore';
-import { SCAN_NMAP_POST, SCAN_WASP_SPIDER_POST } from 'constants/endpoints'
+import { SCAN_NMAP_POST, SCAN_SUBDOMAINS_POST, SCAN_WASP_SPIDER_POST } from 'constants/endpoints'
 
 interface ScanState {
   scanNmap: {
     data: any
     error: any
     isLoading: boolean
+  }
+  scanSubdomain: {
+    data: any,
+    error: any,
+    isLoading: boolean,
   }
   scanZapSpider: {
     data: any
@@ -23,11 +28,16 @@ const initialState: ScanState = {
     error: {},
     isLoading: false,
   },
+  scanSubdomain: {
+    data: {},
+    error: {},
+    isLoading: false,
+  },
   scanZapSpider: {
     data: {},
     error: {},
     isLoading: false,
-  }
+  },
 };
 
 export const scanSlice = createSlice({
@@ -44,6 +54,17 @@ export const scanSlice = createSlice({
     scanNmapSuccess: (state, action: PayloadAction<any>) => {
       state.scanNmap.isLoading = false
       state.scanNmap.data = { ...action.payload }
+    },
+    scanSubdomainStart: state => {
+      state.scanSubdomain.isLoading = true
+    },
+    scanSubdomainFailed: (state, action: PayloadAction<any>) => {
+      state.scanSubdomain.isLoading = false
+      state.scanSubdomain.data = { ...action.payload }
+    },
+    scanSubdomainSuccess: (state, action: PayloadAction<any>) => {
+      state.scanSubdomain.isLoading = false
+      state.scanSubdomain.data = { ...action.payload }
     },
     scanZapSpiderStart: state => {
       state.scanZapSpider.isLoading = true
@@ -63,6 +84,9 @@ export const {
   scanNmapStart,
   scanNmapFailed,
   scanNmapSuccess,
+  scanSubdomainStart,
+  scanSubdomainFailed,
+  scanSubdomainSuccess,
   scanZapSpiderStart,
   scanZapSpiderFailed,
   scanZapSpiderSuccess,
@@ -82,6 +106,21 @@ export const scanNmap = (urlTarget: string): AppThunk => async (dispatch) => {
     dispatch(scanNmapFailed(error))
   }
 };
+
+export const scanSubdomain = (urlTarget: string): AppThunk => async (dispatch) => {
+  dispatch(scanSubdomainStart())
+  try {
+    const { data } = await api({
+      endpoint: SCAN_SUBDOMAINS_POST,
+      params: {
+        target: urlTarget,
+      }
+    })
+    dispatch(scanSubdomainSuccess(data))
+  } catch (error) {
+    dispatch(scanSubdomainFailed(error))
+  }
+}
 
 export const scanZapSpider = (urlTarget: string): AppThunk => async (dispatch) => {
   dispatch(scanZapSpiderStart())

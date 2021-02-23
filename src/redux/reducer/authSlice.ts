@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { replace } from 'connected-react-router'
+import { SIGNIN_POST } from 'constants/endpoints';
 
+import api from 'utils/api';
 import { AppThunk, RootState } from 'redux/configureStore';
 import { hasToken, removeToken, setToken } from 'utils/token'
 
@@ -96,15 +98,26 @@ export const authSignout = (): AppThunk => async dispatch => {
 
 export const authSignin = (payload: any): AppThunk => async dispatch => {
   dispatch(authSigninStart())
-  await setToken(auth.token)
-  dispatch(authSigninSuccess({
-    auth,
-    user: {
-      role: user.role,
-      email: payload.email,
-    },
-  }))
-  await dispatch(replace('/dashboard'))
+  try {
+    const { data } = await api({
+      endpoint: SIGNIN_POST,
+      body: {
+        username: payload.email,
+        password: payload.password,
+      }
+    })
+    await setToken(data.access_token)
+    dispatch(authSigninSuccess({
+      auth,
+      user: {
+        role: user.role,
+        email: payload.email,
+      },
+    }))
+    await dispatch(replace('/dashboard'))
+  } catch (error) {
+    dispatch(authSigninFailed())
+  }
 }
 
 export const selectIsAuth = (state: RootState) => ({

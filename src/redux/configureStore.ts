@@ -4,13 +4,15 @@ import { createBrowserHistory, History } from 'history'
 import logger from 'redux-logger'
 
 import authReducer from 'redux/reducer/authSlice'
-import counterReducer from 'redux/reducer/counterSlice';
+import counterReducer from 'redux/reducer/counterSlice'
+import scanReducer from 'redux/reducer/scanSlice'
 
 function createRootReducer (history: History) {
   return combineReducers({
     router: connectRouter(history),
     auth: authReducer,
     counter: counterReducer,
+    scan: scanReducer,
   })
 }
 

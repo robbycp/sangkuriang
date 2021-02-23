@@ -21,68 +21,51 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-function PageScanView() {
+interface ScanTools {
+  nmap: boolean
+  owaspZap: boolean
+  subdomainEnum: boolean
+  sslScanner: boolean
+}
+
+interface OwaspZapMode {
+  full: boolean
+  spider: boolean
+  active: boolean
+}
+
+interface Props {
+  handleChangeOwaspMode: (event: React.ChangeEvent<HTMLInputElement>) => void,
+  handleChangePort: (event: React.ChangeEvent<HTMLInputElement>) => void,
+  handleChangeUrl: (event: React.ChangeEvent<HTMLInputElement>) => void,
+  handleChangeScanTool: (event: React.ChangeEvent<HTMLInputElement>) => void,
+  handleSubmit: () => void,
+  isSubmitDisabled: boolean,
+  nmapPortError: string,
+  nmapPortRange: number,
+  owaspZapMode: OwaspZapMode,
+  scanTools: ScanTools,
+  stateNmap: any,
+  urlScanned: string,
+}
+
+function PageScanView(props: Props) {
+  const {
+    handleChangeOwaspMode,
+    handleChangePort,
+    handleChangeUrl,
+    handleChangeScanTool,
+    handleSubmit,
+    isSubmitDisabled,
+    nmapPortError,
+    nmapPortRange,
+    owaspZapMode,
+    scanTools,
+    stateNmap,
+    urlScanned,
+  } = props
+  console.log('stateNmap', stateNmap)
   const classes = useStyles();
-
-  const [urlScanned, seturlScanned] = React.useState('')
-  const handleChangeUrl = (event: React.ChangeEvent<HTMLInputElement>) => {
-    seturlScanned(event.target.value);
-  };
-
-  const [scanTools, setScanTools] = React.useState({
-    nmap: false,
-    owaspZap: false,
-    subdomainEnum: false,
-    sslScanner: false,
-  });
-  const handleChangeScanTool = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setScanTools({ ...scanTools, [event.target.name]: event.target.checked });
-  };
-
-  const [nmapPortRange, setnmapPortRange] = React.useState(0)
-  const [nmapPortError, setnmapPortError] = React.useState('')
-  React.useEffect(() => {
-    if (nmapPortRange <= 0 || nmapPortRange > 65536) {
-      setnmapPortError('Port must be 1 - 65536')
-    } else {
-      setnmapPortError('')
-    }
-  }, [nmapPortRange])
-  const [owaspZapMode, setowaspZapMode] = React.useState({
-    full: false,
-    spider: false,
-    active: false,
-  })
-
-  const handleChangePort = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setnmapPortRange(Number(event.target.value));
-  };
-  const handleChangeOwaspMode = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setowaspZapMode({ ...owaspZapMode, [event.target.name]: event.target.checked });
-  };
-
-  const [isSubmitDisabled, setIsSubmitDisabled] = React.useState(true)
-  React.useEffect(() => {
-    if (
-      urlScanned.length > 0
-      && [scanTools.nmap, scanTools.owaspZap, scanTools.sslScanner, scanTools.subdomainEnum].filter((i) => !!i).length > 0
-    ) {
-      setIsSubmitDisabled(false)
-    } else {
-      setIsSubmitDisabled(true)
-    }
-    if (scanTools.owaspZap) {
-      if (
-        !nmapPortError
-        && [owaspZapMode.full, owaspZapMode.spider, owaspZapMode.active].filter((i) => !!i).length > 0
-      ) {
-        setIsSubmitDisabled(false)
-      } else {
-        setIsSubmitDisabled(true)
-      }
-    }
-  }, [urlScanned.length, scanTools, nmapPortRange, owaspZapMode, nmapPortError])
-
   return (
     <div>
       <Grid>
@@ -141,7 +124,12 @@ function PageScanView() {
             </FormGroup>
           </FormControl>
         </Grid>
-        <Button variant="contained" color="primary" disabled={isSubmitDisabled}>
+        <Button
+          variant="contained"
+          color="primary"
+          disabled={isSubmitDisabled}
+          onClick={handleSubmit}
+        >
           Scan
         </Button>
       </Grid>
